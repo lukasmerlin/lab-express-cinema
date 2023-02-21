@@ -1,9 +1,8 @@
-// To insert in "seeds/movies.seed.js"
+require('dotenv/config');
 const mongoose = require('mongoose');
+const MovieModel = require('../models/movie.Model');
 
-const Movie = require('../models/Movie.model');
-
-const MONGO_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/cinema';
+const MONGO_URI = process.env.MONGODB_URI || "mongodb://localhost/lab-express-cinema";
 
 const movies = [
   {
@@ -91,19 +90,11 @@ const movies = [
 // Add here the script that will be run to actually seed the database (feel free to refer to the previous lesson)
 
 mongoose
-	.connect(MONGO_URI)
-	.then((x) => {
-		console.log(`Connected to Mongo! Database name: "${x.connections[0].name}"`);
-
-		return Movie.create(movies);
-	})
-	.then((moviesDB) => {
-		console.log(`Successfully seeded the database with ${moviesDB.length} movies`);
-		return mongoose.connection.close();
-	})
-	.then(() => {
-		console.log('Connection closed!');
-	})
-	.catch((err) => {
-		console.error('Error connecting to mongo: ', err);
-	});
+    .connect(MONGO_URI)
+    .then((connectMongoose) => {
+        console.log('Connect DB: ', connectMongoose.connections[0].name);
+        return MovieModel.insertMany(movies);
+    })
+    .finally(() => {
+        mongoose.disconnect();
+    })
